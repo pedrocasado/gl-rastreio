@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cloudflare = require('cloudflare-express');
 const requireDir = require('require-dir');
 const nunjucks = require('nunjucks');
 const helmet = require('helmet');
@@ -14,6 +15,7 @@ nunjucks.configure('./src/views', {
 
 requireDir('./src/models');
 
+app.use(cloudflare.restore());
 app.use(compression()); //Compress all routes
 app.use(helmet());
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies (as sent by HTML forms)

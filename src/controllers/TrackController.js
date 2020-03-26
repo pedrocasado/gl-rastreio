@@ -42,7 +42,7 @@ module.exports = {
                 'BuscaNotaFiscal[8]': '',
                 'BuscaNotaFiscal[9]': '',
             })
-            .then(function(response) {
+            .then(function (response) {
                 const dom = new JSDOM(response.data);
                 const document = dom.window.document;
 
@@ -82,12 +82,12 @@ module.exports = {
 
                 return res.json(respArr);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 // log error
                 Log.create({
                     acn: req.params.acn,
                     ref: req.params.ref,
-                    ip: req.headers['HTTP_CF_CONNECTING_IP'] || '127.0.0.1',
+                    ip: req.cf_ip || '127.0.0.1',
                     json_response: JSON.stringify(error),
                     dt_created: Date.now(),
                 });

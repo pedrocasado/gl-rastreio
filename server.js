@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const requestIp = require('request-ip');
 const express = require('express');
 const requireDir = require('require-dir');
 const nunjucks = require('nunjucks');
@@ -14,6 +15,7 @@ nunjucks.configure('./src/views', {
 
 requireDir('./src/models');
 
+app.use(requestIp.mw());
 app.use(compression()); //Compress all routes
 app.use(helmet());
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies (as sent by HTML forms)

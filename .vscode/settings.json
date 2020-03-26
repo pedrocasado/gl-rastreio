@@ -1,0 +1,10 @@
+{
+    "explorer.confirmDelete": false,
+    "editor.formatOnSave": true,
+    "workbench.colorTheme": "Monokai",
+    "prettier.trailingComma": "all",
+    "prettier.tabWidth": 4,
+    "prettier.semi": true,
+    "prettier.singleQuote": true,
+    "prettier.printWidth": 185
+}

@@ -1,0 +1,46 @@
+{% extends "layout.njk" %}
+
+{% block body %}
+    <div class="container">
+        <h2>Formatos de Retorno</h2>
+
+        <div class="alert alert-dark" role="alert">
+            <h4 class="alert-heading">JSON</h4>
+            <p>URL: <a target="_blank" href="/track/123/12345678">{{ fullUrl }}track/123/12345678</a></p>
+            <hr>
+
+            <pre><code>
+            {
+                "result": {
+                    "acn": "127",
+                    "ref": "12345678",
+                    "tracking": [
+                        "14SEP as 2051 hs ---  1 vol(s) com  0.5 Kg(s)  carga recebida em  VGL - FRANQUIA ALPHAVILE para embarque.",
+                        "14SEP / 2254  -- 1 Volumes(s) manifestado(s) no voo G3XXXXB/14SEP em  VGL - FRANQUIA ALPHAVILE",
+                        "14SEP / 2256 -- 1 Volumes(s) embarcado(s) em VGL - FRANQUIA ALPHAVILE no voo G3XXXXB/14SEP para SAO PAULO - CONGONHAS",
+                        "15SEP / 0240  -- 1 Volume(s) recebido(s) em CGH - SAO PAULO - CONGONHAS no voo G3XXXXB/14SEP para reembarque",
+                        "15SEP at  0250 ---  1 Pc(s) with  0.5 KG(s) stored at  XXXX3 at  SAO PAULO - CONGONHAS",
+                        "15SEP / 0350  -- 1 Volumes(s) manifestado(s) no voo G3XXXXB/15SEP em  CGH - SAO PAULO - CONGONHAS",
+                        "15SEP / 0532 -- 1 Volumes(s) embarcado(s) em CGH - SAO PAULO - CONGONHAS no voo G3XXXXB/15SEP para RECIFE - JABOATAO DOS GUARARAPES",
+                        "15SEP as 1041 hs -- 1 volume(s) desembarcado(s)  em REC - RECIFE - JABOATAO DOS GUARARAPES do voo G3XXXXB/15SEP",
+                        "1 pieces(s) 0.5 reported to customs in REC on 15SEP at 1041",
+                        "18SEP / 0857  -- 1 piece(s) cleared at REC by Local Customs",
+                        "18SEP at  0857 ---  1 Pc(s) with  0.5 KG(s) stored at  1ADILSON at  RECIFE - JABOATAO DOS GUARARAPES",
+                        "18SEP / 0931  -- 1 piece(s) sent on Delivery at REC - RECIFE - JABOATAO DOS GUARARAPES by",
+                        "18SEP as 1358 hs -- 1 volume(s) entregue(s) em REC - RECIFE - JABOATAO DOS GUARARAPES para EDSON"
+                    ]
+                }
+            }
+            </code></pre>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <span class="text-muted">
+                <a href="/contact">Contato</a>
+            </span>
+        </div>
+    </footer>
+
+{% endblock %}

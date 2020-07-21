@@ -1,65 +1,27 @@
 const { Log } = require('../models');
 const axios = require('axios').default;
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
 
 module.exports = {
     async index(req, res) {
         axios
-            .post('https://servicos.gollog.com.br/Rastreamento/Consultar', {
-                TipoBusca: 1,
-                'CampoPrefixoConhecimentoAerio[0]': req.params.acn,
-                'CampoConhecimentoAerio[0]': req.params.ref,
-                'CampoPrefixoConhecimentoAerio[1]': '',
-                'CampoConhecimentoAerio[1]': '',
-                'CampoPrefixoConhecimentoAerio[2]': '',
-                'CampoConhecimentoAerio[2]': '',
-                'CampoPrefixoConhecimentoAerio[3]': '',
-                'CampoConhecimentoAerio[3]': '',
-                'CampoPrefixoConhecimentoAerio[4]': '',
-                'CampoConhecimentoAerio[4]': '',
-                'CampoPrefixoConhecimentoAerio[5]': '',
-                'CampoConhecimentoAerio[5]': '',
-                'CampoPrefixoConhecimentoAerio[6]': '',
-                'CampoConhecimentoAerio[6]': '',
-                'CampoPrefixoConhecimentoAerio[7]': '',
-                'CampoConhecimentoAerio[7]': '',
-                'CampoPrefixoConhecimentoAerio[8]': '',
-                'CampoConhecimentoAerio[8]': '',
-                'CampoPrefixoConhecimentoAerio[9]': '',
-                'CampoConhecimentoAerio[9]': '',
-                NumReferencia: '',
-                BuscarNotaFiscalEscolhido: 0,
-                NumeroDoDocument: '',
-                'BuscaNotaFiscal[0]': '',
-                'BuscaNotaFiscal[1]': '',
-                'BuscaNotaFiscal[2]': '',
-                'BuscaNotaFiscal[3]': '',
-                'BuscaNotaFiscal[4]': '',
-                'BuscaNotaFiscal[5]': '',
-                'BuscaNotaFiscal[6]': '',
-                'BuscaNotaFiscal[7]': '',
-                'BuscaNotaFiscal[8]': '',
-                'BuscaNotaFiscal[9]': '',
+            .get('https://servicos.gollog.com.br/api/services/app/Tracking/GetAllByCodes?Values=' + req.params.acn + req.params.ref, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+                },
             })
             .then(function (response) {
-                const dom = new JSDOM(response.data);
-                const document = dom.window.document;
+                const result = response.data.result;
 
-                var nodeList = document.querySelectorAll('p.p_aside_botton');
-                var i;
                 var tracks = [];
                 var respArr = [];
 
-                // NodeList {
-                //     '0': HTMLParagraphElement {},
-                //     '1': HTMLParagraphElement {},
-                //     ...
-                for (i = 0; i < nodeList.length; ++i) {
-                    tracks.push(nodeList[i].textContent.trim());
+                if (result[0] && result[0].events.length > 0) {
+                    result[0].events.forEach((element) => {
+                        tracks.push(element.date.trim() + ' | ' + element.message.trim());
+                    });
                 }
 
-                if (nodeList.length > 0) {
+                if (tracks.length > 0) {
                     respArr = {
                         result: {
                             acn: req.params.acn,
@@ -75,7 +37,7 @@ module.exports = {
                         ip: req.clientIp || '127.0.0.1',
                         json_response: JSON.stringify(respArr['result']['tracking']),
                         dt_created: Date.now(),
-                    }).then(log => {
+                    }).then((log) => {
                         // console.log('log auto-generated ID:', log.id);
                     });
                 }

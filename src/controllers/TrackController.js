@@ -1,6 +1,8 @@
 const { Log } = require('../models');
 const axios = require('axios').default;
 const { SocksProxyAgent } = require('socks-proxy-agent');
+const UserAgent = require('user-agents');
+const userAgent = new UserAgent();
 
 module.exports = {
     async index(req, res) {
@@ -10,7 +12,7 @@ module.exports = {
             .get('https://servicos.gollog.com.br/api/services/app/Tracking/GetAllByCodes?Values=' + req.params.acn + req.params.ref, {
                 httpsAgent: agent !== null ? agent : false,
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+                    'User-Agent': userAgent.toString(),
                 },
             })
             .then(function (response) {

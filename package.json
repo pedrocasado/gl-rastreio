@@ -25,6 +25,7 @@
         "memcached-promisify": "^2.0.0",
         "mysql": "^2.18.1",
         "mysql2": "^2.1.0",
+        "node-cron": "^2.0.3",
         "nunjucks": "^3.2.2",
         "path": "^0.12.7",
         "rate-limiter-flexible": "^2.1.9",

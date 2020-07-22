@@ -8,6 +8,51 @@ const helmet = require('helmet');
 const compression = require('compression');
 const app = express();
 const { RateLimiterMemory } = require('rate-limiter-flexible');
+const cron = require('node-cron');
+const { Log } = require('./src/models');
+const { Op } = require('sequelize');
+const mailer = require('./src/services/mailer');
+
+// second	0-59 (optional)
+// minute	0-59
+// hour	0-23
+// day of month	1-31
+// month	1-12 (or names)
+// day of week	0-7 (or names, 0 or 7 are sunday)
+
+// runs every day at 9
+cron.schedule('0 9 * * *', () => {
+    // check for errors and mail
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    Log.count({
+        where: {
+            json_response: {
+                [Op.startsWith]: '{"message', // LIKE 'str%'
+            },
+            dt_created: {
+                [Op.lt]: new Date(),
+                [Op.gt]: yesterday,
+            },
+        },
+        order: [['id', 'DESC']],
+        limit: 500,
+    }).then((result) => {
+        if (result > 0) {
+            console.log(result + 'errors detected.');
+
+            const msg = {
+                from: process.env.SUPPORT_EMAIL,
+                to: process.env.SUPPORT_EMAIL,
+                subject: 'GL API ERROR',
+                html: 'Check log table for errors.',
+            };
+
+            mailer.send(msg);
+        }
+    });
+});
 
 nunjucks.configure('./src/views', {
     autoescape: true,

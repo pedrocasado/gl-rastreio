@@ -76,16 +76,24 @@ const rateLimiter = new RateLimiterMemory({
 
 const rateLimiterMiddleware = (req, res, next) => {
     rateLimiter
-        .consume(req.ip)
+        .consume(req.clientIp)
         .then(() => {
             next();
         })
         .catch(() => {
+            Log.create({
+                acn: req.params.acn,
+                ref: req.params.ref,
+                ip: req.clientIp || '127.0.0.1',
+                json_response: JSON.stringify({ error: 'rate limit' }),
+                dt_created: Date.now(),
+            });
+
             return res.status(429).json({ error: 'Muitas requisições (limite 50 requisições/hora). Para aumentar o limite entre em contato conosco.' });
         });
 };
 
-app.use('/track/', rateLimiterMiddleware);
+app.use('/track/:acn([0-9]{3})/:ref([0-9]{7,10})', rateLimiterMiddleware);
 
 // setup local variables middleware
 app.use(function (req, res, next) {

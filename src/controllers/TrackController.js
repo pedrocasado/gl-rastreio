@@ -6,6 +6,7 @@ const userAgent = new UserAgent();
 const Cache = require('memcached-promisify');
 const cache = new Cache({ keyPrefix: 'gl', cacheHost: process.env.MEMCACHED_DSN });
 const cacheTimeout = 43200; // 12 hours
+const agent = process.env.NODE_ENV == 'dev' ? null : new SocksProxyAgent('socks5h://127.0.0.1:9050');
 
 module.exports = {
     async index(req, res) {
@@ -14,7 +15,6 @@ module.exports = {
         const cachedTracks = await cache.get(cacheKey);
         if (cachedTracks == undefined) {
             // Cache does not exist
-            const agent = process.env.NODE_ENV == 'dev' ? null : new SocksProxyAgent('socks5h://127.0.0.1:9050');
             axios
                 .get('https://servicos.gollog.com.br/api/services/app/Tracking/GetAllByCodes?Values=' + req.params.acn + req.params.ref, {
                     httpsAgent: agent !== null ? agent : false,
@@ -96,5 +96,18 @@ module.exports = {
 
             return res.json(respArr);
         }
+    },
+
+    async status(req, res) {
+        axios
+            .get('http://api.ipify.org', {
+                httpsAgent: agent !== null ? agent : false,
+            })
+            .then(function (response) {
+                return res.json(response.data);
+            })
+            .catch(function (err) {
+                return res.json('NOK');
+            });
     },
 };

@@ -4,6 +4,7 @@ const { SocksProxyAgent } = require('socks-proxy-agent');
 const UserAgent = require('user-agents');
 const userAgent = new UserAgent();
 const cache = require('../services/cache');
+const cacheTimeout = 43200; // 12 hours
 
 const agent = process.env.NODE_ENV == 'dev' ? null : new SocksProxyAgent('socks5h://127.0.0.1:9050');
 
@@ -55,8 +56,6 @@ module.exports = {
                         // console.log('save cache success');
                     });
 
-                    // console.log('returning normal response');
-
                     return res.json(respArr);
                 })
                 .catch(function (error) {
@@ -65,7 +64,7 @@ module.exports = {
                         acn: req.params.acn,
                         ref: req.params.ref,
                         ip: req.clientIp || '127.0.0.1',
-                        json_response: JSON.stringify(error),
+                        json_response: JSON.stringify({ error: error }),
                         dt_created: Date.now(),
                     });
                     return res.json({ error: { code: 500, message: 'Somethings wrong.' } });

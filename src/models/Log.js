@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 allowNull: false,
             },
+            cached: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
         },
         {
             // don't add the timestamp attributes (updatedAt, createdAt)

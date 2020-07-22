@@ -22,6 +22,7 @@
         "express-validator": "^6.6.0",
         "fs": "0.0.1-security",
         "helmet": "^3.23.3",
+        "memcached-promisify": "^2.0.0",
         "mysql": "^2.18.1",
         "mysql2": "^2.1.0",
         "nunjucks": "^3.2.2",

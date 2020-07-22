@@ -3,9 +3,8 @@ const axios = require('axios').default;
 const { SocksProxyAgent } = require('socks-proxy-agent');
 const UserAgent = require('user-agents');
 const userAgent = new UserAgent();
-const Cache = require('memcached-promisify');
-const cache = new Cache({ keyPrefix: 'gl', cacheHost: process.env.MEMCACHED_DSN });
-const cacheTimeout = 43200; // 12 hours
+const cache = require('../services/cache');
+
 const agent = process.env.NODE_ENV == 'dev' ? null : new SocksProxyAgent('socks5h://127.0.0.1:9050');
 
 module.exports = {

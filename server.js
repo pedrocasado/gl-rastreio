@@ -12,6 +12,7 @@ const cron = require('node-cron');
 const { Log } = require('./src/models');
 const { Op } = require('sequelize');
 const mailer = require('./src/services/mailer');
+const db = require('./src/models/index');
 
 // second	0-59 (optional)
 // minute	0-59
@@ -19,6 +20,40 @@ const mailer = require('./src/services/mailer');
 // day of month	1-31
 // month	1-12 (or names)
 // day of week	0-7 (or names, 0 or 7 are sunday)
+
+// runs once a week on monday
+cron.schedule('0 9 * * 1', () => {
+    // check for errors and mail
+    const pastSevenDays = new Date();
+    pastSevenDays.setDate(pastSevenDays.getDate() - 17);
+
+    Log.findAll({
+        attributes: ['ip', [db.sequelize.fn('COUNT', db.sequelize.col('ip')), 'n_ips']],
+        where: {
+            dt_created: {
+                [Op.lt]: new Date(),
+                [Op.gt]: pastSevenDays,
+            },
+        },
+        group: 'ip',
+        // order: [['count(ip)', 'DESC']],
+    }).then((result) => {
+        let htmlMessage = '';
+
+        result.forEach((log) => {
+            htmlMessage = htmlMessage + log.dataValues.ip + ' - ' + log.dataValues.n_ips + '<br />';
+        });
+
+        const msg = {
+            from: process.env.SUPPORT_EMAIL,
+            to: process.env.SUPPORT_EMAIL,
+            subject: 'Ips count from last week',
+            html: htmlMessage,
+        };
+
+        mailer.send(msg);
+    });
+});
 
 // runs every day at 9
 cron.schedule('0 9 * * *', () => {

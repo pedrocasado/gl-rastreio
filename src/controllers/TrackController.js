@@ -1,12 +1,16 @@
+const CircularJSON = require('circular-json');
 const { Log } = require('../models');
-const axios = require('axios').default;
-const { SocksProxyAgent } = require('socks-proxy-agent');
 const UserAgent = require('user-agents');
 const userAgent = new UserAgent();
 const cache = require('../services/cache');
 const cacheTimeout = 43200; // 12 hours
-
-const agent = process.env.NODE_ENV == 'dev' ? null : new SocksProxyAgent('socks5h://127.0.0.1:9050');
+const torAxios = require('tor-axios');
+const tor = torAxios.torSetup({
+    ip: '127.0.0.1',
+    port: 9050,
+    controlPort: '9051',
+    controlPassword: process.env.TOR_PASS
+})
 
 module.exports = {
     async index(req, res) {
@@ -14,10 +18,19 @@ module.exports = {
 
         const cachedTracks = await cache.get(cacheKey);
         if (cachedTracks == undefined) {
-            // Cache does not exist
-            axios
+
+            const cachedIp = await cache.get('cachedIp');
+            if (cachedIp == undefined) {
+                // Grab new ip
+                await tor.torNewSession();
+
+                cache.set('cachedIp', '1', 7200).then((data) => {
+                    // console.log('save cache success');
+                });
+            }
+
+            tor
                 .get('https://servicos.gollog.com.br/api/services/app/Tracking/GetAllByCodes?Values=' + req.params.acn + req.params.ref, {
-                    httpsAgent: agent !== null ? agent : false,
                     headers: {
                         'User-Agent': userAgent.toString(),
                     },
@@ -64,7 +77,7 @@ module.exports = {
                         acn: req.params.acn,
                         ref: req.params.ref,
                         ip: req.clientIp || '127.0.0.1',
-                        json_response: JSON.stringify({ error: error }),
+                        json_response: CircularJSON.stringify({ error: error.response }),
                         dt_created: Date.now(),
                     });
                     return res.json({ error: { code: 500, message: 'Somethings wrong.' } });
@@ -97,10 +110,10 @@ module.exports = {
     },
 
     async status(req, res) {
-        axios
-            .get('http://api.ipify.org', {
-                httpsAgent: agent !== null ? agent : false,
-            })
+        await tor.torNewSession();
+
+        tor
+            .get('http://api.ipify.org', {})
             .then(function (response) {
                 return res.json(response.data);
             })

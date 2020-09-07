@@ -142,3 +142,5 @@ app.use(function (req, res, next) {
 app.use('/', require('./src/routes'));
 
 app.listen(process.env.PORT || 3333);
+
+console.log('Listening: http://127.0.0.1:' + process.env.PORT);
